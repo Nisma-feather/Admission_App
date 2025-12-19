@@ -6,10 +6,12 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  Modal
 } from "react-native";
 import api from "../../apiConfig/api";
 import { Ionicons } from "@expo/vector-icons";
 import CollegeCard from "../../components/CollegeCard";
+import CourseCard from "../../components/CourseCard";
 
 // collegesDummyData.js
 const collegesDummyData = [
@@ -314,13 +316,108 @@ const collegesDummyData = [
     updatedAt: new Date("2024-01-21")
   }
 ];
+export const dummyCourses = [
+  {
+    _id: "course1",
+    name: "B.Tech IT", // 👈 short name (CARD TITLE)
+    degree: "Bachelor of Technology",
+    level: "UG",
+    category: "Engineering & Technology",
+    specialization: "Information Technology",
+    duration: 4,
+    fees: { min: 150000, max: 300000 },
+    intake: 120,
+    entranceExams: ["JEE Main", "TNEA"],
+    college: {
+      _id: "college1",
+      name: "Sri Ram Engineering College", // 👈 shown under course name
+      type: "Private",
+      establishedYear: 2008,
+      location: {
+        city: "Chennai",
+        district: "Chennai",
+        state: "Tamil Nadu",
+      },
+      accreditation: {
+        naac: "A+",
+        nba: true,
+      },
+      placement: {
+        placementPercentage: 92,
+        highestPackage: 1200000,
+      },
+      facilities: {
+        hostel: true,
+        placementCell: true,
+        wifi: true,
+        sports: true,
+        transport: true,
+      },
+      admission: {
+        entranceExams: ["JEE Main", "TNEA", "SRMEEE"],
+      },
+      media: {
+        logo: "https://via.placeholder.com/100",
+      },
+    },
+  },
 
+  {
+    _id: "course2",
+    name: "B.Sc Physics",
+    degree: "Bachelor of Science",
+    level: "UG",
+    category: "Arts & Science",
+    specialization: "Physics",
+    duration: 3,
+    fees: { min: 45000, max: 90000 },
+    intake: 60,
+    entranceExams: ["University Entrance Test"],
+    college: {
+      _id: "college2",
+      name: "St. Joseph’s College of Arts & Science",
+      type: "Government",
+      establishedYear: 1965,
+      location: {
+        city: "Coimbatore",
+        district: "Coimbatore",
+        state: "Tamil Nadu",
+      },
+      accreditation: {
+        naac: "A",
+        nba: false,
+      },
+      placement: {
+        placementPercentage: 78,
+        highestPackage: 600000,
+      },
+      facilities: {
+        hostel: true,
+        placementCell: true,
+        wifi: true,
+        sports: false,
+        transport: true,
+      },
+      admission: {
+        entranceExams: ["University Entrance Test"],
+      },
+      media: {
+        logo: "",
+      },
+    },
+  },
+];
 
 const HomeScreen = () => {
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("");
   const [locationRes, setLocationRes] = useState([]);
   const [showLocationScreen, setShowLocationScreen] = useState(false);
+  const [activeType, setActiveType] = useState("ALL");
+  // ALL | COURSE | COLLEGE
+
+  const [showFilterModal, setShowFilterModal] = useState(false);
+
 
   const fetchLocationResult = async () => {
     try {
@@ -332,51 +429,42 @@ const HomeScreen = () => {
   };
 
   useEffect(() => {
-    console.log("location changed");
-
     if (location.trim()) fetchLocationResult();
     else setLocationRes([]);
   }, [location]);
 
+  const combinedData = [...collegesDummyData, ...dummyCourses];
+
+  const filteredData = combinedData.filter((item) => {
+    if (activeType === "COURSE") return !!item.degree;
+    if (activeType === "COLLEGE") return !item.degree;
+    return true; // ALL
+  });
+
+  /* ================= LOCATION SCREEN ================= */
   if (showLocationScreen) {
     return (
       <View style={styles.container}>
-        {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => setShowLocationScreen(false)}>
             <Ionicons name="arrow-back" size={22} color="#2563eb" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Your Location</Text>
+          <Text style={styles.headerTitle}>Select Location</Text>
         </View>
 
-        {/* Search Area */}
         <View style={styles.searchBox}>
           <Ionicons name="search" size={18} color="#2563eb" />
           <TextInput
             value={location}
             onChangeText={setLocation}
-            placeholder="Search Area"
+            placeholder="Search area"
             style={styles.searchInput}
           />
         </View>
 
-        {/* Use current location */}
-        <View style={styles.currentLocationRow}>
-          <Ionicons name="locate-outline" size={18} color="#2563eb" />
-          <Text style={styles.currentLocationText}>Use current location</Text>
-          <Text style={styles.selectText}>Select</Text>
-        </View>
-
-        {/* Results */}
-        <Text style={styles.resultTitle}>Search Result</Text>
-
-        
-        
-
         <FlatList
           data={locationRes}
-          keyExtractor={(_, idx) => idx.toString()}
-          keyboardShouldPersistTaps="handled"
+          keyExtractor={(_, i) => i.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.resultItem}
@@ -385,7 +473,7 @@ const HomeScreen = () => {
                 setShowLocationScreen(false);
               }}
             >
-              <Ionicons name="location" size={16} color="#64748b" />
+              <Ionicons name="location-outline" size={16} color="#64748b" />
               <Text style={styles.resultText}>{item.label}</Text>
             </TouchableOpacity>
           )}
@@ -394,66 +482,138 @@ const HomeScreen = () => {
     );
   }
 
+  /* ================= HOME SCREEN ================= */
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Ionicons name="arrow-back" size={22} color="#2563eb" />
-        <Text style={styles.headerTitle}></Text>
-      </View>
+    <>
+      <FlatList
+        ListHeaderComponent={
+          <>
+            {/* Header */}
+            <View style={styles.header}>
+              <Text style={styles.headerTitle}>Find Colleges & Courses</Text>
+            </View>
 
-      {/* Job title input */}
-      {/* Search + Filter Row */}
-      <View style={styles.searchFilterRow}>
-        {/* Job title input */}
-        <View style={styles.searchInputBox}>
-          <Ionicons name="briefcase-outline" size={20} color="#2563eb" />
-          <TextInput
-            value={search}
-            onChangeText={setSearch}
-            placeholder="Course name, or college"
-            style={styles.input}
-          />
+            {/* Search Row */}
+            <View style={styles.searchFilterRow}>
+              <View style={styles.searchInputBox}>
+                <Ionicons name="search-outline" size={20} color="#2563eb" />
+                <TextInput
+                  value={search}
+                  onChangeText={setSearch}
+                  placeholder="Course or college name"
+                  style={styles.input}
+                />
+              </View>
+
+              <TouchableOpacity
+                style={styles.filterButton}
+                onPress={() => setShowFilterModal(true)}
+              >
+                <Ionicons name="options-outline" size={22} color="#2563eb" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Location */}
+            <TouchableOpacity onPress={() => setShowLocationScreen(true)}>
+              <View style={styles.inputRow}>
+                <Ionicons name="location-outline" size={20} color="#2563eb" />
+                <Text style={styles.placeholderText}>
+                  {location || "Select Location"}
+                </Text>
+              </View>
+            </TouchableOpacity>
+            {/* Main Type Filter */}
+            <View style={styles.typeFilterRow}>
+              {["ALL", "COURSE", "COLLEGE"].map((type) => (
+                <TouchableOpacity
+                  key={type}
+                  onPress={() => setActiveType(type)}
+                  style={[
+                    styles.typeChip,
+                    activeType === type && styles.activeTypeChip,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.typeChipText,
+                      activeType === type && styles.activeTypeChipText,
+                    ]}
+                  >
+                    {type === "ALL"
+                      ? "All"
+                      : type === "COURSE"
+                      ? "Courses"
+                      : "Colleges"}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Colleges Section */}
+            <Text style={styles.sectionTitle}>Top Colleges</Text>
+          </>
+        }
+        data={[...collegesDummyData, ...dummyCourses]}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) =>
+          item.degree ? (
+            <CourseCard course={item} />
+          ) : (
+            <CollegeCard college={item} />
+          )
+        }
+        contentContainerStyle={styles.listContainer}
+        showsVerticalScrollIndicator={false}
+      />
+      <Modal visible={showFilterModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            {/* Header */}
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Filters</Text>
+              <TouchableOpacity onPress={() => setShowFilterModal(false)}>
+                <Ionicons name="close" size={22} />
+              </TouchableOpacity>
+            </View>
+
+            {/* COURSE FILTERS */}
+            <Text style={styles.filterSectionTitle}>Course Filters</Text>
+
+            <TouchableOpacity style={styles.filterOption}>
+              <Text>Fees Range</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.filterOption}>
+              <Text>Level (UG / PG)</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.filterOption}>
+              <Text>Category</Text>
+            </TouchableOpacity>
+
+            {/* COLLEGE FILTERS */}
+            <Text style={styles.filterSectionTitle}>College Filters</Text>
+
+            <TouchableOpacity style={styles.filterOption}>
+              <Text>College Type</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.filterOption}>
+              <Text>NAAC Rating</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.filterOption}>
+              <Text>Hostel Available</Text>
+            </TouchableOpacity>
+
+            {/* Apply Button */}
+            <TouchableOpacity style={styles.applyButton}>
+              <Text style={styles.applyButtonText}>Apply Filters</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-
-        {/* Filter Button */}
-        <TouchableOpacity style={styles.filterButton}>
-          <Ionicons name="options-outline" size={22} color="#2563eb" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Location input */}
-      <TouchableOpacity onPress={() => setShowLocationScreen(true)}>
-        <View style={styles.inputRow}>
-          <Ionicons name="location-outline" size={20} color="#2563eb" />
-          <Text style={styles.placeholderText}>
-            {location || "Job Location"}
-          </Text>
-        </View>
-      </TouchableOpacity>
-
-      {/* Location dropdown (unchanged logic) */}
-
-      {/* Button */}
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Search</Text>
-      </TouchableOpacity>
-
-      <View style={styles.container}>
-        <FlatList
-          data={collegesDummyData}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <CollegeCard
-              college={item}
-              onPress={() => handleCollegePress(item)}
-            />
-          )}
-          contentContainerStyle={styles.listContainer}
-          showsVerticalScrollIndicator={false}
-        />
-      </View>
-    </View>
+      </Modal>
+    </>
   );
 };
 
@@ -467,116 +627,98 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 24,
+    marginBottom: 16,
   },
 
   headerTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginLeft: 12,
+    fontSize: 20,
+    fontWeight: "700",
     color: "#0f172a",
   },
-  inputRow: {
+
+  searchFilterRow: {
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: 12,
+  },
+
+  searchInputBox: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#e5e7eb",
     borderRadius: 10,
     paddingHorizontal: 12,
     height: 48,
-    backgroundColor: "#fff",
-    marginBottom: 12,
   },
 
   input: {
     flex: 1,
     marginLeft: 8,
-    fontSize: 16,
-    color: "#0f172a",
-  },
-
-  dropdown: {
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    marginTop: 4,
-    maxHeight: 200,
-    elevation: 4,
-  },
-
-  dropdownItem: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
-  },
-
-  dropdownText: {
     fontSize: 15,
-    color: "#334155",
   },
 
-  button: {
-    backgroundColor: "#2563eb",
-    paddingVertical: 14,
-    borderRadius: 8,
+  filterButton: {
+    width: 48,
+    height: 48,
+    marginLeft: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    justifyContent: "center",
     alignItems: "center",
-    marginTop: 24,
+    backgroundColor: "#fff",
   },
 
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: 48,
+    borderRadius: 10,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    paddingHorizontal: 12,
+    marginBottom: 16,
   },
+
   placeholderText: {
-    marginLeft: 10,
-    fontSize: 16,
+    marginLeft: 8,
+    fontSize: 15,
     color: "#64748b",
   },
+
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#0f172a",
+    marginBottom: 12,
+  },
+
+  listContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+  },
+
+  /* Location screen */
   searchBox: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: "#e5e7eb",
-    borderRadius: 8,
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    height: 48,
     marginBottom: 16,
   },
 
   searchInput: {
     flex: 1,
     marginLeft: 8,
-    fontSize: 16,
-  },
-
-  currentLocationRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
-  },
-
-  currentLocationText: {
-    marginLeft: 8,
-    flex: 1,
-    color: "#2563eb",
     fontSize: 15,
-  },
-
-  selectText: {
-    color: "#2563eb",
-    fontWeight: "500",
-  },
-
-  resultTitle: {
-    marginTop: 16,
-    marginBottom: 8,
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#0f172a",
   },
 
   resultItem: {
@@ -590,36 +732,87 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#334155",
   },
-  searchFilterRow: {
+  typeFilterRow: {
     flexDirection: "row",
-    alignItems: "center",
     marginBottom: 12,
   },
-  shadowBox: {
-  elevation: 2,
-}
-,
 
-  searchInputBox: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
+  typeChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: "#e5e7eb",
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    height: 48,
     backgroundColor: "#fff",
+    marginRight: 8,
   },
-  filterButton: {
-    width: 48,
-    height: 48,
-    marginLeft: 12,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    justifyContent: "center",
-    alignItems: "center",
+
+  activeTypeChip: {
+    backgroundColor: "#2563eb",
+    borderColor: "#2563eb",
+  },
+
+  typeChipText: {
+    fontSize: 14,
+    color: "#334155",
+    fontWeight: "500",
+  },
+
+  activeTypeChipText: {
+    color: "#fff",
+  },
+
+  /* Modal */
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "flex-end",
+  },
+
+  modalContainer: {
     backgroundColor: "#fff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 16,
+  },
+
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+  },
+
+  filterSectionTitle: {
+    fontSize: 15,
+    fontWeight: "600",
+    marginTop: 12,
+    marginBottom: 8,
+  },
+
+  filterOption: {
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderColor: "#e5e7eb",
+  },
+
+  applyButton: {
+    marginTop: 16,
+    backgroundColor: "#2563eb",
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+
+  applyButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
+
