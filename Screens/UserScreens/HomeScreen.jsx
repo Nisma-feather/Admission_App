@@ -6,418 +6,76 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  Modal
+  Modal,
+  ScrollView,
 } from "react-native";
 import api from "../../apiConfig/api";
 import { Ionicons } from "@expo/vector-icons";
 import CollegeCard from "../../components/CollegeCard";
 import CourseCard from "../../components/CourseCard";
+import FilterCapsule from "../../components/FilterCapsule";
+import { dummyCourses, collegesDummyData } from "../../DummyData";
+import MultiSlider from "@ptomasroos/react-native-multi-slider";
 
-// collegesDummyData.js
-const collegesDummyData = [
-  {
-    _id: "1",
-    name: "Anna University, Chennai",
-    code: "AU001",
-    type: "Government",
-    establishedYear: 1978,
-    affiliatedUniversity: "Anna University",
-    accreditation: {
-      naac: "A+",
-      nba: true
-    },
-    location: {
-      state: "Tamil Nadu",
-      district: "Chennai",
-      city: "Chennai",
-      area: "Guindy",
-      pincode: "600025",
-      coordinates: {
-        lat: 13.0107,
-        lng: 80.2359
-      }
-    },
-    contact: {
-      email: "info@annauniv.edu",
-      phone: "044-2235 7070",
-      website: "www.annauniv.edu",
-      address: "Sardar Patel Road, Guindy, Chennai"
-    },
-    admission: {
-      admissionProcess: "Entrance Based",
-      entranceExams: ["TNEA", "GATE", "TANCET"],
-      applicationStartDate: new Date("2024-03-01"),
-      applicationEndDate: new Date("2024-05-31")
-    },
-    facilities: {
-      hostel: true,
-      transport: true,
-      library: true,
-      sports: true,
-      wifi: true,
-      placementCell: true
-    },
-    placement: {
-      placementPercentage: 92,
-      averagePackage: 650000,
-      highestPackage: 3500000,
-      topRecruiters: ["TCS", "Infosys", "CTS", "Amazon", "Microsoft"]
-    },
-    media: {
-      logo: "https://example.com/annauniv-logo.jpg",
-      images: [
-        "https://example.com/college1.jpg",
-        "https://example.com/campus1.jpg"
-      ]
-    },
-    isActive: true,
-    isVerified: true,
-    createdAt: new Date("2023-01-15"),
-    updatedAt: new Date("2024-01-20")
-  },
-  {
-    _id: "2",
-    name: "PSG College of Technology",
-    code: "PSG001",
-    type: "Private",
-    establishedYear: 1951,
-    affiliatedUniversity: "Anna University",
-    accreditation: {
-      naac: "A++",
-      nba: true
-    },
-    location: {
-      state: "Tamil Nadu",
-      district: "Coimbatore",
-      city: "Coimbatore",
-      area: "Peelamedu",
-      pincode: "641004",
-      coordinates: {
-        lat: 11.0168,
-        lng: 76.9558
-      }
-    },
-    contact: {
-      email: "principal@psgtech.edu",
-      phone: "0422-257 2177",
-      website: "www.psgtech.edu",
-      address: "Peelamedu, Coimbatore"
-    },
-    admission: {
-      admissionProcess: "Entrance Based",
-      entranceExams: ["TNEA"],
-      applicationStartDate: new Date("2024-04-01"),
-      applicationEndDate: new Date("2024-06-15")
-    },
-    facilities: {
-      hostel: true,
-      transport: false,
-      library: true,
-      sports: true,
-      wifi: true,
-      placementCell: true
-    },
-    placement: {
-      placementPercentage: 95,
-      averagePackage: 850000,
-      highestPackage: 4200000,
-      topRecruiters: ["Google", "Amazon", "IBM", "Bosch", "Zoho"]
-    },
-    media: {
-      logo: "https://example.com/psg-logo.jpg",
-      images: [
-        "https://example.com/psg-campus.jpg",
-        "https://example.com/psg-building.jpg"
-      ]
-    },
-    isActive: true,
-    isVerified: true,
-    createdAt: new Date("2023-02-10"),
-    updatedAt: new Date("2024-01-18")
-  },
-  {
-    _id: "3",
-    name: "SRM Institute of Science and Technology",
-    code: "SRM001",
-    type: "Deemed",
-    establishedYear: 1985,
-    affiliatedUniversity: "SRM University",
-    accreditation: {
-      naac: "A++",
-      nba: true
-    },
-    location: {
-      state: "Tamil Nadu",
-      district: "Kancheepuram",
-      city: "Chennai",
-      area: "Kattankulathur",
-      pincode: "603203",
-      coordinates: {
-        lat: 12.8236,
-        lng: 80.0444
-      }
-    },
-    contact: {
-      email: "admission@srmist.edu.in",
-      phone: "044-2741 7000",
-      website: "www.srmist.edu.in",
-      address: "SRM Nagar, Kattankulathur, Chennai"
-    },
-    admission: {
-      admissionProcess: "Entrance Based",
-      entranceExams: ["SRMJEEE", "JEE Main"],
-      applicationStartDate: new Date("2024-01-15"),
-      applicationEndDate: new Date("2024-05-30")
-    },
-    facilities: {
-      hostel: true,
-      transport: true,
-      library: true,
-      sports: true,
-      wifi: true,
-      placementCell: true
-    },
-    placement: {
-      placementPercentage: 90,
-      averagePackage: 720000,
-      highestPackage: 3800000,
-      topRecruiters: ["Amazon", "Microsoft", "Accenture", "Deloitte", "CTS"]
-    },
-    media: {
-      logo: "https://example.com/srm-logo.jpg",
-      images: [
-        "https://example.com/srm-campus.jpg",
-        "https://example.com/srm-hostel.jpg"
-      ]
-    },
-    isActive: true,
-    isVerified: true,
-    createdAt: new Date("2023-03-05"),
-    updatedAt: new Date("2024-01-22")
-  },
-  {
-    _id: "4",
-    name: "Vellore Institute of Technology",
-    code: "VIT001",
-    type: "Deemed",
-    establishedYear: 1984,
-    affiliatedUniversity: "VIT University",
-    accreditation: {
-      naac: "A++",
-      nba: true
-    },
-    location: {
-      state: "Tamil Nadu",
-      district: "Vellore",
-      city: "Vellore",
-      area: "Katpadi",
-      pincode: "632014",
-      coordinates: {
-        lat: 12.8409,
-        lng: 79.1536
-      }
-    },
-    contact: {
-      email: "admissions@vit.ac.in",
-      phone: "0416-224 3091",
-      website: "www.vit.ac.in",
-      address: "VIT University, Katpadi, Vellore"
-    },
-    admission: {
-      admissionProcess: "Entrance Based",
-      entranceExams: ["VITEEE", "JEE Main"],
-      applicationStartDate: new Date("2024-01-01"),
-      applicationEndDate: new Date("2024-03-31")
-    },
-    facilities: {
-      hostel: true,
-      transport: true,
-      library: true,
-      sports: true,
-      wifi: true,
-      placementCell: true
-    },
-    placement: {
-      placementPercentage: 94,
-      averagePackage: 880000,
-      highestPackage: 4500000,
-      topRecruiters: ["Microsoft", "Google", "Amazon", "Goldman Sachs", "JP Morgan"]
-    },
-    media: {
-      logo: "https://example.com/vit-logo.jpg",
-      images: [
-        "https://example.com/vit-main.jpg",
-        "https://example.com/vit-library.jpg"
-      ]
-    },
-    isActive: true,
-    isVerified: true,
-    createdAt: new Date("2023-01-25"),
-    updatedAt: new Date("2024-01-19")
-  },
-  {
-    _id: "5",
-    name: "Madras Institute of Technology",
-    code: "MIT001",
-    type: "Government",
-    establishedYear: 1949,
-    affiliatedUniversity: "Anna University",
-    accreditation: {
-      naac: "A+",
-      nba: true
-    },
-    location: {
-      state: "Tamil Nadu",
-      district: "Chennai",
-      city: "Chennai",
-      area: "Chromepet",
-      pincode: "600044",
-      coordinates: {
-        lat: 12.9516,
-        lng: 80.1462
-      }
-    },
-    contact: {
-      email: "dean@mitindia.edu",
-      phone: "044-2251 6001",
-      website: "www.mitindia.edu",
-      address: "Chromepet, Chennai"
-    },
-    admission: {
-      admissionProcess: "Entrance Based",
-      entranceExams: ["TNEA"],
-      applicationStartDate: new Date("2024-04-10"),
-      applicationEndDate: new Date("2024-06-20")
-    },
-    facilities: {
-      hostel: true,
-      transport: true,
-      library: true,
-      sports: false,
-      wifi: true,
-      placementCell: true
-    },
-    placement: {
-      placementPercentage: 88,
-      averagePackage: 680000,
-      highestPackage: 3200000,
-      topRecruiters: ["ISRO", "DRDO", "BHEL", "L&T", "TATA Motors"]
-    },
-    media: {
-      logo: "https://example.com/mit-logo.jpg",
-      images: [
-        "https://example.com/mit-campus.jpg",
-        "https://example.com/mit-lab.jpg"
-      ]
-    },
-    isActive: true,
-    isVerified: true,
-    createdAt: new Date("2023-02-15"),
-    updatedAt: new Date("2024-01-21")
-  }
-];
-export const dummyCourses = [
-  {
-    _id: "course1",
-    name: "B.Tech IT", // 👈 short name (CARD TITLE)
-    degree: "Bachelor of Technology",
-    level: "UG",
-    category: "Engineering & Technology",
-    specialization: "Information Technology",
-    duration: 4,
-    fees: { min: 150000, max: 300000 },
-    intake: 120,
-    entranceExams: ["JEE Main", "TNEA"],
-    college: {
-      _id: "college1",
-      name: "Sri Ram Engineering College", // 👈 shown under course name
-      type: "Private",
-      establishedYear: 2008,
-      location: {
-        city: "Chennai",
-        district: "Chennai",
-        state: "Tamil Nadu",
-      },
-      accreditation: {
-        naac: "A+",
-        nba: true,
-      },
-      placement: {
-        placementPercentage: 92,
-        highestPackage: 1200000,
-      },
-      facilities: {
-        hostel: true,
-        placementCell: true,
-        wifi: true,
-        sports: true,
-        transport: true,
-      },
-      admission: {
-        entranceExams: ["JEE Main", "TNEA", "SRMEEE"],
-      },
-      media: {
-        logo: "https://via.placeholder.com/100",
-      },
-    },
-  },
 
-  {
-    _id: "course2",
-    name: "B.Sc Physics",
-    degree: "Bachelor of Science",
-    level: "UG",
-    category: "Arts & Science",
-    specialization: "Physics",
-    duration: 3,
-    fees: { min: 45000, max: 90000 },
-    intake: 60,
-    entranceExams: ["University Entrance Test"],
-    college: {
-      _id: "college2",
-      name: "St. Joseph’s College of Arts & Science",
-      type: "Government",
-      establishedYear: 1965,
-      location: {
-        city: "Coimbatore",
-        district: "Coimbatore",
-        state: "Tamil Nadu",
-      },
-      accreditation: {
-        naac: "A",
-        nba: false,
-      },
-      placement: {
-        placementPercentage: 78,
-        highestPackage: 600000,
-      },
-      facilities: {
-        hostel: true,
-        placementCell: true,
-        wifi: true,
-        sports: false,
-        transport: true,
-      },
-      admission: {
-        entranceExams: ["University Entrance Test"],
-      },
-      media: {
-        logo: "",
-      },
-    },
-  },
-];
 
 const HomeScreen = () => {
   const [search, setSearch] = useState("");
+  const [dummyCourses,setDummyCourses] = useState([]);
+  const [collegesDummyData,setCollegesDummyData] = useState([])
   const [location, setLocation] = useState("");
+  const [selectedLocation,setSelectedLocation]=useState('');
   const [locationRes, setLocationRes] = useState([]);
   const [showLocationScreen, setShowLocationScreen] = useState(false);
   const [activeType, setActiveType] = useState("ALL");
-  // ALL | COURSE | COLLEGE
-
+  const [courseFilters, setCourseFilters] = useState({
+    level: [],
+    category: [],
+    duration: [],
+    feeRange: { min: null, max: null },
+  });
+  const [collegeFilters, setCollegeFilters] = useState({
+    type: [],
+    naac: [],
+    nba: false,
+    facilities: [],
+  });
   const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showAllColleges, setShowAllColleges] = useState(false);
+  const [showAllCourses, setShowAllCourses] = useState(false);
 
+  const COURSE_FILTERS = {
+    level: ["UG", "PG", "Diploma", "PhD"],
+    category: [
+
+      "Medical & Paramedical",
+      "Arts & Science",
+      "Engineering & Technology",
+      "Law",
+      "Education & Teaching",
+      "Diploma",
+      "Architecture",
+      "Agriculture",
+      "Hotel Management",
+      "Media & Communication",
+      "Aviation",
+      "Sports Science",
+    ],
+    duration: ["1", "2", "3", "4", "5"],
+  };
+
+  const COLLEGE_FILTERS = {
+    type: ["Government", "Private", "Deemed"],
+    naac: ["A++", "A+", "A", "B++", "B"],
+    facilities: [
+      "hostel",
+      "transport",
+      "library",
+      "sports",
+      "wifi",
+      "placementCell",
+    ],
+  };
 
   const fetchLocationResult = async () => {
     try {
@@ -428,18 +86,334 @@ const HomeScreen = () => {
     }
   };
 
+  const fetchColleges = async (collegeFilters = {}) => {
+    try {
+      const params = {};
+
+      if (selectedLocation) params.loc = selectedLocation;
+      if (search) params.name = search;
+
+      if (collegeFilters.type?.length > 0) {
+        params.collegeType = collegeFilters.type.join(",");
+      }
+
+      if (collegeFilters.facilities?.length > 0) {
+        params.facilities = collegeFilters.facilities.join(",");
+      }
+
+      if (collegeFilters.naac?.length > 0) {
+        params.accreditation = collegeFilters.naac.join(",");
+      }
+
+      if (collegeFilters.nba === true) {
+        params.nba = collegeFilters.nba;
+      }
+      console.log("params",params)
+
+      const res = await api.get("/college", { params });
+      setCollegesDummyData(res.data.colleges);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+
+  const fetchCourses=async()=>{
+    try{
+      
+      //  const [courseFilters, setCourseFilters] = useState({
+      //    level: [],
+      //    category: [],
+      //    duration: null,
+      //    feeRange: { min: null, max: null },
+      //  });
+    const params = {};
+    console.log("feerange",courseFilters.feeRange);
+    
+
+    if (selectedLocation) {
+      params.loc = selectedLocation;
+    }
+
+    if (search) {
+      params.name = search;
+    }
+
+    if (courseFilters.level?.length > 0) {
+      params.level = courseFilters.level.join(",");
+    }
+
+    if (courseFilters.category?.length > 0) {
+      params.category = courseFilters.category.join(",");
+    }
+
+    if (courseFilters.duration?.length > 0) {
+      params.duration = courseFilters.duration.join(",");
+    }
+
+      if (courseFilters.feeRange?.min !== null) {
+        params.feeMin = courseFilters.feeRange.min;
+      }
+
+      if (courseFilters.feeRange?.max !== null) {
+        params.feeMax = courseFilters.feeRange.max;
+      }
+
+    console.log("fetching the courses");
+
+    const res = await api.get("/course", { params });
+    setDummyCourses(res.data.courses);
+
+ 
+
+    }
+    catch(e){
+      console.log(e)
+    }
+  }
+  useEffect(()=>{
+     fetchColleges(collegeFilters);
+    
+  },[selectedLocation, search]);
+
+  useEffect(()=>{
+ fetchCourses(courseFilters);
+  },[setSelectedLocation, search])
+  
+
   useEffect(() => {
-    if (location.trim()) fetchLocationResult();
-    else setLocationRes([]);
+    if (location.trim()) {
+      const timeoutId = setTimeout(() => {
+        fetchLocationResult();
+      }, 500);
+      return () => clearTimeout(timeoutId);
+    } else {
+      setLocationRes([]);
+    }
   }, [location]);
 
-  const combinedData = [...collegesDummyData, ...dummyCourses];
+  // Get limited results for "ALL" view
+  const limitedColleges = collegesDummyData.slice(0, 2);
+  const limitedCourses = dummyCourses.slice(0, 2);
 
-  const filteredData = combinedData.filter((item) => {
-    if (activeType === "COURSE") return !!item.degree;
-    if (activeType === "COLLEGE") return !item.degree;
-    return true; // ALL
-  });
+  // Reset show all states when activeType changes
+  useEffect(() => {
+    if (activeType !== "ALL") {
+      setShowAllColleges(false);
+      setShowAllCourses(false);
+    }
+  }, [activeType]);
+
+
+
+  const renderModalContent = () => {
+    return (
+      <ScrollView style={styles.modalContent}>
+        {activeType === "COURSE" && (
+          <View>
+            <Text style={styles.modalSectionTitle}>Level</Text>
+            <View style={styles.filterRow}>
+              {COURSE_FILTERS.level.map((item) => (
+                <FilterCapsule
+                  key={item}
+                  label={item}
+                  active={courseFilters.level.includes(item)}
+                  onPress={() => {
+                    setCourseFilters((prev) => ({
+                      ...prev,
+                      level: prev.level.includes(item)
+                        ? prev.level.filter((l) => l !== item)
+                        : [...prev.level, item],
+                    }));
+                  }}
+                />
+              ))}
+            </View>
+            <Text style={styles.modalSectionTitle}>Fees Range (₹)</Text>
+
+            <View style={{ paddingHorizontal: 10 }}>
+              <MultiSlider
+                values={[
+                  courseFilters.feeRange.min ?? 50000,
+               
+                  courseFilters.feeRange.max ?? 500000,
+                ]}
+                min={50000}
+                max={500000}
+                step={10000}
+                sliderLength={280}
+                onValuesChangeFinish={(values) => {
+                  setCourseFilters((prev) => ({
+                    ...prev,
+                    feeRange: {
+                      min: values[0],
+                      max: values[1],
+                    },
+                  }));
+                }}
+                selectedStyle={{
+                  backgroundColor: "#4f46e5",
+                }}
+                unselectedStyle={{
+                  backgroundColor: "#d1d5db",
+                }}
+                markerStyle={{
+                  backgroundColor: "#4f46e5",
+                  height: 20,
+                  width: 20,
+                }}
+              />
+
+              {/* Display selected values */}
+              <View style={styles.feeLabelRow}>
+                <Text>₹{courseFilters.feeRange.min ?? 50000}</Text>
+                <Text>₹{courseFilters.feeRange.max ?? 500000}</Text>
+              </View>
+            </View>
+
+            <Text style={styles.modalSectionTitle}>Category</Text>
+            <View style={styles.filterRow}>
+              {COURSE_FILTERS.category.map((item) => (
+                <FilterCapsule
+                  key={item}
+                  label={item}
+                  active={courseFilters.category.includes(item)}
+                  onPress={() =>
+                    setCourseFilters((prev) => ({
+                      ...prev,
+                      category: prev.category.includes(item)
+                        ? prev.category.filter((c) => c !== item)
+                        : [...prev.category, item],
+                    }))
+                  }
+                />
+              ))}
+            </View>
+            <Text style={styles.modalSectionTitle}>Duration (Years)</Text>
+            <View style={styles.filterRow}>
+              {COURSE_FILTERS.duration.map((item) => (
+                <FilterCapsule
+                  key={item}
+                  label={`${item} Year`}
+                  active={courseFilters.duration.includes(item)}
+                  onPress={() =>
+                    setCourseFilters((prev) => ({
+                      ...prev,
+                      duration: prev.duration.includes(item)
+                        ? prev.duration.filter((d) => d !== item)
+                        : [...prev.duration, item],
+                    }))
+                  }
+                />
+              ))}
+            </View>
+          </View>
+        )}
+
+        {activeType === "COLLEGE" && (
+          <View>
+            <Text style={styles.modalSectionTitle}>College Type</Text>
+            <View style={styles.filterRow}>
+              {COLLEGE_FILTERS.type.map((item) => (
+                <FilterCapsule
+                  key={item}
+                  label={item}
+                  active={collegeFilters.type.includes(item)}
+                  onPress={() =>
+                    setCollegeFilters((prev) => ({
+                      ...prev,
+                      type: prev.type.includes(item)
+                        ? prev.type.filter((t) => t !== item)
+                        : [...prev.type, item],
+                    }))
+                  }
+                />
+              ))}
+            </View>
+
+            <Text style={styles.modalSectionTitle}>NAAC Rating</Text>
+            <View style={styles.filterRow}>
+              {COLLEGE_FILTERS.naac.map((item) => (
+                <FilterCapsule
+                  key={item}
+                  label={item}
+                  active={collegeFilters.naac.includes(item)}
+                  onPress={() =>
+                    setCollegeFilters((prev) => ({
+                      ...prev,
+                      naac: prev.naac.includes(item)
+                        ? prev.naac.filter((n) => n !== item)
+                        : [...prev.naac, item],
+                    }))
+                  }
+                />
+              ))}
+            </View>
+
+            <Text style={styles.modalSectionTitle}>Facilities</Text>
+            <View style={styles.filterRow}>
+              {COLLEGE_FILTERS.facilities.map((item) => (
+                <FilterCapsule
+                  key={item}
+                  label={item.charAt(0).toUpperCase() + item.slice(1)}
+                  active={collegeFilters.facilities.includes(item)}
+                  onPress={() =>
+                    setCollegeFilters((prev) => ({
+                      ...prev,
+                      facilities: prev.facilities.includes(item)
+                        ? prev.facilities.filter((f) => f !== item)
+                        : [...prev.facilities, item],
+                    }))
+                  }
+                />
+              ))}
+            </View>
+          </View>
+        )}
+
+        <TouchableOpacity
+          style={styles.applyButton}
+          onPress={() => {
+            setShowFilterModal(false);
+            if (activeType === "COLLEGE") {
+              console.log("COllege filters", collegeFilters);
+              fetchColleges(collegeFilters);
+            }
+            if (activeType === "COURSE") {
+              fetchCourses(courseFilters);
+            }
+          }}
+        >
+          <Text style={styles.applyButtonText}>Apply Filters</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.applyButton, styles.clearButton]}
+          onPress={() => {
+            if (activeType === "COURSE") {
+              setCourseFilters({
+                level: [],
+                category: [],
+                duration: [],
+                feeRange: { min: null, max: null },
+              });
+            } else if (activeType === "COLLEGE") {
+              setCollegeFilters({
+                type: [],
+                naac: [],
+                nba: false,
+                facilities: [],
+              });
+            }
+          }}
+        >
+          <Text style={[styles.applyButtonText, styles.clearButtonText]}>
+            Clear Filters
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    );
+  };
 
   /* ================= LOCATION SCREEN ================= */
   if (showLocationScreen) {
@@ -459,17 +433,19 @@ const HomeScreen = () => {
             onChangeText={setLocation}
             placeholder="Search area"
             style={styles.searchInput}
+            autoFocus
           />
         </View>
 
         <FlatList
           data={locationRes}
-          keyExtractor={(_, i) => i.toString()}
+          keyExtractor={(item, i) => `${item.label}-${i}`}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.resultItem}
               onPress={() => {
                 setLocation(item.label);
+                setSelectedLocation(item.label);
                 setShowLocationScreen(false);
               }}
             >
@@ -477,86 +453,96 @@ const HomeScreen = () => {
               <Text style={styles.resultText}>{item.label}</Text>
             </TouchableOpacity>
           )}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>
+                {location.trim()
+                  ? "No locations found"
+                  : "Search for a location"}
+              </Text>
+            </View>
+          }
         />
       </View>
     );
   }
 
-  /* ================= HOME SCREEN ================= */
-  return (
-    <>
-      <FlatList
-        ListHeaderComponent={
-          <>
-            {/* Header */}
-            <View style={styles.header}>
-              <Text style={styles.headerTitle}>Find Colleges & Courses</Text>
-            </View>
+  const renderAllResults = () => {
+    const collegesToShow = showAllColleges
+      ? collegesDummyData
+      : limitedColleges;
+    const coursesToShow = showAllCourses ? dummyCourses : limitedCourses;
 
-            {/* Search Row */}
-            <View style={styles.searchFilterRow}>
-              <View style={styles.searchInputBox}>
-                <Ionicons name="search-outline" size={20} color="#2563eb" />
-                <TextInput
-                  value={search}
-                  onChangeText={setSearch}
-                  placeholder="Course or college name"
-                  style={styles.input}
-                />
-              </View>
-
-              <TouchableOpacity
-                style={styles.filterButton}
-                onPress={() => setShowFilterModal(true)}
-              >
-                <Ionicons name="options-outline" size={22} color="#2563eb" />
-              </TouchableOpacity>
-            </View>
-
-            {/* Location */}
-            <TouchableOpacity onPress={() => setShowLocationScreen(true)}>
-              <View style={styles.inputRow}>
-                <Ionicons name="location-outline" size={20} color="#2563eb" />
-                <Text style={styles.placeholderText}>
-                  {location || "Select Location"}
-                </Text>
-              </View>
-            </TouchableOpacity>
-            {/* Main Type Filter */}
-            <View style={styles.typeFilterRow}>
-              {["ALL", "COURSE", "COLLEGE"].map((type) => (
-                <TouchableOpacity
-                  key={type}
-                  onPress={() => setActiveType(type)}
-                  style={[
-                    styles.typeChip,
-                    activeType === type && styles.activeTypeChip,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.typeChipText,
-                      activeType === type && styles.activeTypeChipText,
-                    ]}
-                  >
-                    {type === "ALL"
-                      ? "All"
-                      : type === "COURSE"
-                      ? "Courses"
-                      : "Colleges"}
-                  </Text>
-                </TouchableOpacity>
+    return (
+      <ScrollView
+        style={styles.allResultsContainer}
+        contentContainerStyle={styles.allResultsContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Colleges Section */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Colleges</Text>
+          {collegesToShow.length > 0 ? (
+            <>
+              {collegesToShow.map((college) => (
+                <CollegeCard key={college._id} college={college} />
               ))}
-            </View>
+              {!showAllColleges && collegesDummyData.length > 2 && (
+                <TouchableOpacity
+                  style={styles.loadMoreButton}
+                  onPress={() => setShowAllColleges(true)}
+                >
+                  <Text style={styles.loadMoreText}>
+                    Load more colleges ({collegesDummyData.length - 2} more)
+                  </Text>
+                  <Ionicons name="chevron-down" size={18} color="#2563eb" />
+                </TouchableOpacity>
+              )}
+            </>
+          ) : (
+            <Text style={styles.noResultsText}>No colleges found</Text>
+          )}
+        </View>
 
-            {/* Colleges Section */}
-            <Text style={styles.sectionTitle}>Top Colleges</Text>
-          </>
-        }
-        data={[...collegesDummyData, ...dummyCourses]}
+        {/* Courses Section */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Courses</Text>
+          {coursesToShow.length > 0 ? (
+            <>
+              {coursesToShow.map((course) => (
+                <CourseCard key={course._id} course={course} />
+              ))}
+              {!showAllCourses && dummyCourses.length > 2 && (
+                <TouchableOpacity
+                  style={styles.loadMoreButton}
+                  onPress={() => setShowAllCourses(true)}
+                >
+                  <Text style={styles.loadMoreText}>
+                    Load more courses ({dummyCourses.length - 2} more)
+                  </Text>
+                  <Ionicons name="chevron-down" size={18} color="#2563eb" />
+                </TouchableOpacity>
+              )}
+            </>
+          ) : (
+            <Text style={styles.noResultsText}>No courses found</Text>
+          )}
+        </View>
+      </ScrollView>
+    );
+  };
+
+  const renderSingleTypeResults = () => {
+    const data = activeType === "COURSE" ? dummyCourses : collegesDummyData;
+    const title = activeType === "COURSE" ? "Courses" : "Colleges";
+ console.log(title );
+ 
+    return (
+      <FlatList
+        data={data}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) =>
-          item.degree ? (
+          activeType==="COURSE" ? (
             <CourseCard course={item} />
           ) : (
             <CollegeCard college={item} />
@@ -564,56 +550,126 @@ const HomeScreen = () => {
         }
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Ionicons name="search-outline" size={48} color="#94a3b8" />
+            <Text style={styles.emptyText}>No {title.toLowerCase()} found</Text>
+            <Text style={styles.emptySubtext}>
+              Try adjusting your search or filters
+            </Text>
+          </View>
+        }
       />
-      <Modal visible={showFilterModal} animationType="slide" transparent>
+    );
+  };
+
+  /* ================= HOME SCREEN ================= */
+  return (
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Find Colleges & Courses</Text>
+      </View>
+
+      {/* Search Row */}
+      <View style={styles.searchFilterRow}>
+        <View style={styles.searchInputBox}>
+          <Ionicons name="search-outline" size={20} color="#2563eb" />
+          <TextInput
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Course or college name"
+            style={styles.input}
+          />
+        </View>
+
+        <TouchableOpacity
+          style={styles.filterButton}
+          onPress={() => setShowFilterModal(true)}
+        >
+          <Ionicons name="options-outline" size={22} color="#2563eb" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Location */}
+      <TouchableOpacity onPress={() => setShowLocationScreen(true)}>
+        <View style={styles.inputRow}>
+          <Ionicons name="location-outline" size={20} color="#2563eb" />
+          <Text style={styles.placeholderText}>
+            {location || "Select Location"}
+          </Text>
+        </View>
+      </TouchableOpacity>
+
+      {/* Main Type Filter */}
+      <View style={styles.typeFilterRow}>
+        {["ALL", "COURSE", "COLLEGE"].map((type) => (
+          <TouchableOpacity
+            key={type}
+            onPress={() => setActiveType(type)}
+            style={[
+              styles.typeChip,
+              activeType === type && styles.activeTypeChip,
+            ]}
+          >
+            <Text
+              style={[
+                styles.typeChipText,
+                activeType === type && styles.activeTypeChipText,
+              ]}
+            >
+              {type === "ALL"
+                ? "All"
+                : type === "COURSE"
+                ? "Courses"
+                : "Colleges"}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Results count */}
+      <Text style={styles.resultsCount}>
+        {activeType === "ALL"
+          ? `${collegesDummyData.length + dummyCourses.length} found`
+          : activeType === "COURSE"
+          ? `${dummyCourses.length} courses found`
+          : `${collegesDummyData.length} colleges found`}
+      </Text>
+
+      {/* Render appropriate content based on activeType */}
+      <View style={styles.contentContainer}>
+        {activeType === "ALL" ? renderAllResults() : renderSingleTypeResults()}
+      </View>
+
+      {/* Filter Modal */}
+      <Modal
+        visible={showFilterModal}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setShowFilterModal(false)}
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            {/* Header */}
+            {/* Modal Header */}
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Filters</Text>
+              <Text style={styles.modalTitle}>
+                {activeType === "COURSE"
+                  ? "Course Filters"
+                  : activeType === "COLLEGE"
+                  ? "College Filters"
+                  : "Filters"}
+              </Text>
               <TouchableOpacity onPress={() => setShowFilterModal(false)}>
-                <Ionicons name="close" size={22} />
+                <Ionicons name="close" size={24} color="#64748b" />
               </TouchableOpacity>
             </View>
 
-            {/* COURSE FILTERS */}
-            <Text style={styles.filterSectionTitle}>Course Filters</Text>
-
-            <TouchableOpacity style={styles.filterOption}>
-              <Text>Fees Range</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.filterOption}>
-              <Text>Level (UG / PG)</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.filterOption}>
-              <Text>Category</Text>
-            </TouchableOpacity>
-
-            {/* COLLEGE FILTERS */}
-            <Text style={styles.filterSectionTitle}>College Filters</Text>
-
-            <TouchableOpacity style={styles.filterOption}>
-              <Text>College Type</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.filterOption}>
-              <Text>NAAC Rating</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.filterOption}>
-              <Text>Hostel Available</Text>
-            </TouchableOpacity>
-
-            {/* Apply Button */}
-            <TouchableOpacity style={styles.applyButton}>
-              <Text style={styles.applyButtonText}>Apply Filters</Text>
-            </TouchableOpacity>
+            {renderModalContent()}
           </View>
         </View>
       </Modal>
-    </>
+    </View>
   );
 };
 
@@ -623,25 +679,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f8fafc",
-    padding: 16,
   },
-
+  contentContainer: {
+    flex: 1,
+  },
   header: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
     marginBottom: 16,
   },
-
   headerTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "700",
     color: "#0f172a",
   },
-
   searchFilterRow: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 12,
+    paddingHorizontal: 16,
   },
-
   searchInputBox: {
     flex: 1,
     flexDirection: "row",
@@ -653,13 +710,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     height: 48,
   },
-
   input: {
     flex: 1,
     marginLeft: 8,
     fontSize: 15,
+    color: "#0f172a",
   },
-
   filterButton: {
     width: 48,
     height: 48,
@@ -671,7 +727,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
   },
-
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -682,24 +737,105 @@ const styles = StyleSheet.create({
     borderColor: "#e5e7eb",
     paddingHorizontal: 12,
     marginBottom: 16,
+    marginHorizontal: 16,
   },
-
   placeholderText: {
     marginLeft: 8,
     fontSize: 15,
     color: "#64748b",
   },
-
+  typeFilterRow: {
+    flexDirection: "row",
+    marginBottom: 16,
+    paddingHorizontal: 16,
+  },
+  typeChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    backgroundColor: "#fff",
+    marginRight: 12,
+  },
+  activeTypeChip: {
+    backgroundColor: "#2563eb",
+    borderColor: "#2563eb",
+  },
+  typeChipText: {
+    fontSize: 14,
+    color: "#334155",
+    fontWeight: "500",
+  },
+  activeTypeChipText: {
+    color: "#fff",
+  },
+  resultsCount: {
+    fontSize: 14,
+    color: "#64748b",
+    marginBottom: 16,
+    paddingHorizontal: 16,
+  },
+  sectionContainer: {
+    marginBottom: 24,
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "700",
     color: "#0f172a",
     marginBottom: 12,
-  },
-
-  listContainer: {
     paddingHorizontal: 16,
+  },
+  allResultsContainer: {
+    flex: 1,
+  },
+  allResultsContent: {
     paddingBottom: 20,
+  },
+  listContainer: {
+    paddingBottom: 20,
+  },
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 48,
+    paddingHorizontal: 16,
+  },
+  emptyText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#475569",
+    marginTop: 12,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: "#94a3b8",
+    marginTop: 4,
+  },
+  loadMoreButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    marginHorizontal: 16,
+    marginTop: 8,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    borderRadius: 8,
+  },
+  loadMoreText: {
+    color: "#2563eb",
+    fontSize: 14,
+    fontWeight: "600",
+    marginRight: 8,
+  },
+  noResultsText: {
+    textAlign: "center",
+    color: "#64748b",
+    fontStyle: "italic",
+    paddingHorizontal: 16,
+    paddingVertical: 16,
   },
 
   /* Location screen */
@@ -713,53 +849,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     height: 48,
     marginBottom: 16,
+    marginHorizontal: 16,
   },
-
   searchInput: {
     flex: 1,
     marginLeft: 8,
     fontSize: 15,
+    color: "#0f172a",
   },
-
   resultItem: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f1f5f9",
   },
-
   resultText: {
     marginLeft: 8,
     fontSize: 15,
     color: "#334155",
-  },
-  typeFilterRow: {
-    flexDirection: "row",
-    marginBottom: 12,
-  },
-
-  typeChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    backgroundColor: "#fff",
-    marginRight: 8,
-  },
-
-  activeTypeChip: {
-    backgroundColor: "#2563eb",
-    borderColor: "#2563eb",
-  },
-
-  typeChipText: {
-    fontSize: 14,
-    color: "#334155",
-    fontWeight: "500",
-  },
-
-  activeTypeChipText: {
-    color: "#fff",
   },
 
   /* Modal */
@@ -768,51 +877,58 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "flex-end",
   },
-
   modalContainer: {
     backgroundColor: "#fff",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 16,
+    maxHeight: "80%",
   },
-
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 16,
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f1f5f9",
   },
-
   modalTitle: {
     fontSize: 18,
     fontWeight: "700",
+    color: "#0f172a",
   },
-
-  filterSectionTitle: {
-    fontSize: 15,
+  modalContent: {
+    padding: 16,
+  },
+  modalSectionTitle: {
+    fontSize: 16,
     fontWeight: "600",
-    marginTop: 12,
+    color: "#0f172a",
+    marginTop: 16,
+    marginBottom: 12,
+  },
+  filterRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
     marginBottom: 8,
   },
-
-  filterOption: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderColor: "#e5e7eb",
-  },
-
   applyButton: {
-    marginTop: 16,
     backgroundColor: "#2563eb",
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: "center",
+    marginTop: 24,
+    marginBottom: 8,
   },
-
   applyButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
   },
+  clearButton: {
+    backgroundColor: "#f1f5f9",
+  },
+  clearButtonText: {
+    color: "#64748b",
+  },
 });
-

@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, Image } from "react-native";
 const CourseCard = ({ course }) => {
   const { college } = course;
 
+
   return (
     <View style={styles.card}>
       {/* 🔹 Header: Logo + Course Title */}
@@ -22,12 +23,10 @@ const CourseCard = ({ course }) => {
           <Text style={styles.collegeName}>{college?.name}</Text>
 
           {/* 🔹 Full Degree Name */}
-          {course.degree && (
+          {course.location && (
             <Text style={styles.degree}>
-           
-
-       {college?.location?.city}, {college?.location?.state}
-
+              {college.location?.city || "NA"}
+              {college.location?.district && `, ${college.location.district}`}
             </Text>
           )}
         </View>
@@ -40,9 +39,9 @@ const CourseCard = ({ course }) => {
 
       {/* 🔹 Badges */}
       <View style={styles.row}>
-        <Text style={styles.badge}>{course.level}</Text>
-        <Text style={styles.badge}>{course.category}</Text>
-        <Text style={styles.badge}>{course.duration} Years</Text>
+        <Text style={styles.badge}>{course?.level}</Text>
+        <Text style={styles.badge}>{course?.category}</Text>
+        <Text style={styles.badge}>{course?.duration} Years</Text>
       </View>
 
       {/* 🔹 Fees & Intake */}

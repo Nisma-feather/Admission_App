@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 const CollegeCard = ({ college, onPress }) => {
+  // console.log("college",college)
   const formatPackage = (amount) => {
     if (amount >= 1000000) {
       return `₹${(amount / 1000000).toFixed(1)} LPA`;
@@ -90,7 +91,7 @@ const CollegeCard = ({ college, onPress }) => {
                   { color: getAvatarColor(college.type) },
                 ]}
               >
-                {college.type}
+                {college.type || "default"}
               </Text>
             </View>
           </View>
@@ -106,7 +107,7 @@ const CollegeCard = ({ college, onPress }) => {
             <View style={styles.detailRow}>
               <Ionicons name="calendar-outline" size={14} color="#64748b" />
               <Text style={styles.detailText}>
-                Est. {college.establishedYear}
+                Est. {college.establishedYear || "default"}
               </Text>
             </View>
             {college.accreditation.nba && (
@@ -123,21 +124,21 @@ const CollegeCard = ({ college, onPress }) => {
         <View style={styles.placementItem}>
           <Text style={styles.placementLabel}>NAAC</Text>
           <Text style={styles.placementValue}>
-            {college.accreditation.naac || 'NA'}
+            {college.accreditation.naac || "NA"}
           </Text>
         </View>
         <View style={styles.separator} />
         <View style={styles.placementItem}>
           <Text style={styles.placementLabel}>Placement %</Text>
           <Text style={styles.placementValue}>
-            {college.placement.placementPercentage}%
+            {college.placement.placementPercentage || "default"}%
           </Text>
         </View>
         <View style={styles.separator} />
         <View style={styles.placementItem}>
           <Text style={styles.placementLabel}>Highest</Text>
           <Text style={styles.placementValue}>
-            {formatPackage(college.placement.highestPackage)}
+            {formatPackage(college.placement.highestPackage) || "default"}
           </Text>
         </View>
       </View>
@@ -177,23 +178,25 @@ const CollegeCard = ({ college, onPress }) => {
       </View>
 
       {/* Entrance Exams */}
-      <View style={styles.examsContainer}>
-        <Text style={styles.examsTitle}>Entrance Exams:</Text>
-        <View style={styles.examsList}>
-          {college.admission.entranceExams.slice(0, 3).map((exam, index) => (
-            <View key={index} style={styles.examChip}>
-              <Text style={styles.examText}>{exam}</Text>
-            </View>
-          ))}
-          {college.admission.entranceExams.length > 3 && (
-            <View style={styles.moreChip}>
-              <Text style={styles.moreText}>
-                +{college.admission.entranceExams.length - 3}
-              </Text>
-            </View>
-          )}
+      { college?.admission?.entranceExams &&
+        <View style={styles.examsContainer}>
+          <Text style={styles.examsTitle}>Entrance Exams:</Text>
+          <View style={styles.examsList}>
+            {college.admission.entranceExams.slice(0, 3).map((exam, index) => (
+              <View key={index} style={styles.examChip}>
+                <Text style={styles.examText}>{exam}</Text>
+              </View>
+            ))}
+            {college.admission.entranceExams.length > 3 && (
+              <View style={styles.moreChip}>
+                <Text style={styles.moreText}>
+                  +{college.admission.entranceExams.length - 3}
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
-      </View>
+      }
     </TouchableOpacity>
   );
 };
